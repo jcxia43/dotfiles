@@ -30,7 +30,6 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'edkolev/tmuxline.vim'
 Plugin 'groenewege/vim-less'
 Plugin 'ivalkeen/vim-ctrlp-tjump'
-" Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'junegunn/vim-easy-align'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'kien/ctrlp.vim'
@@ -39,7 +38,7 @@ Plugin 'Raimondi/delimitMate'
 Plugin 'scrooloose/nerdtree'
 " Plugin 'scrooloose/syntastic'
 Plugin 'taglist.vim'
-Plugin 'terryma/vim-multiple-cursors'
+" Plugin 'terryma/vim-multiple-cursors'
 Plugin 'thoughtbot/vim-rspec'
 Plugin 'tpope/vim-bundler'
 Plugin 'tpope/vim-commentary'
@@ -53,12 +52,26 @@ Plugin 'tpope/vim-jdaddy'
 Plugin 'tpope/vim-rvm'
 Plugin 'terryma/vim-expand-region'
 Plugin 'vim-ruby/vim-ruby'
+Plugin 'ana/vim-textobj-user'
+Plugin 'nelstrom/vim-textobj-rubyblock'
 Plugin 'mtscout6/vim-cjsx'
 Plugin 'mxw/vim-jsx'
 Plugin 'othree/yajs.vim'
-Plugin 'Solarized'
+Plugin 'romainl/flattened'
+Plugin 'morhetz/gruvbox'
 Plugin 'jiangmiao/auto-pairs'
-Plugin 'powerman/vim-plugin-AnsiEsc'
+Plugin 'w0rp/ale'
+Plugin 'ianks/vim-tsx'
+Plugin 'HerringtonDarkholme/yats.vim'
+Plugin 'jremmen/vim-ripgrep'
+Plugin 'rizzatti/dash.vim'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'haya14busa/incsearch.vim'
+
+" Plugin 'rust-lang/rust.vim'
+" Plugin 'vim-ctrlspace/vim-ctrlspace'
+
+
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -81,7 +94,7 @@ filetype plugin indent on    " required
 " set nocompatible
 
 set encoding=utf-8
-set linespace=8
+set linespace=4
 set modelines=0
 set autoindent
 set showmode
@@ -91,6 +104,7 @@ set visualbell
 set ttyfast
 set ttyscroll=3
 set ruler
+set display+=lastline
 set backspace=indent,eol,start
 set number
 set relativenumber
@@ -117,6 +131,17 @@ set ignorecase
 set smartcase
 set hlsearch
 runtime macros/matchit.vim
+
+" Matchit support:
+if exists("loaded_matchit")
+  if !exists("b:match_words")
+    let b:match_ignorecase = 0
+    let b:match_words =
+\ '\%(\%(\%(^\|[;=]\)\s*\)\@<=\%(class\|module\|while\|begin\|until\|for\|if\|unless\|def\|case\)\|\<do\)\>:' .
+\ '\<\%(else\|elsif\|ensure\|rescue\|when\)\>:\%(^\|[^.]\)\@<=\<end\>'
+  endif
+endif
+
 "set it if want to enable global substitution by default
 "set gdefault
 set scrolloff=5
@@ -147,6 +172,9 @@ set backupskip=/tmp/*,/private/tmp/*
 set complete=.,w,b,u,t
 set completeopt=longest,menuone,preview
 
+set smarttab
+
+set updatetime=250
 set mouse=a
 set shell=/bin/zsh
 " Save when losing focus
@@ -207,6 +235,13 @@ set wildignore+=*/coverage/*
 set wildignore+=*/vcr_cassettes/*
 set wildignore+=*.png,*.jpg,*.otf,*.woff,*.jpeg,*.orig
 
+" Configuration for find path
+augroup rubypath
+  autocmd!
+  autocmd FileType ruby setlocal suffixesadd+=.rb
+augroup END
+set suffixesadd+=.rb
+
 " Make sure Vim returns to the same line when you reopen a file.
 " Thanks, Amit
 augroup line_return
@@ -223,7 +258,7 @@ set shiftwidth=2
 set expandtab
 set wrap
 set textwidth=72
-set formatoptions=qrn1
+set formatoptions=qrn1j
 set colorcolumn=+1
 
 " Taking care of the trailing whitespaces
@@ -243,19 +278,11 @@ match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 " Color scheme
 
 set background=light
-set t_Co=256
-" let g:solarized_visibility = "low"
-" let g:solarized_contrast = "high"
-if !has("gui_running")
-    let g:solarized_termtrans=1
-    let g:solarized_termcolors=16
-endif
-colorscheme solarized
-" colorscheme molokai
+colorscheme flattened_light
+" colorscheme gruvbox
 
 " Airline setting
 let g:airline_theme = 'solarized'
-" let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#whitespace#enabled = 0
 " Just show the filename (no path) in the tab
 let g:airline#extensions#tabline#fnamemod = ':t'
@@ -263,43 +290,27 @@ let g:airline#extensions#tabline#fnamemod = ':t'
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
-" function! g:UltiSnips_Complete()
-"     call UltiSnips#ExpandSnippet()
-"     if g:ulti_expand_res == 0
-"         if pumvisible()
-"             return "\<C-n>"
-"         else
-"             call UltiSnips#JumpForwards()
-"             if g:ulti_jump_forwards_res == 0
-"                return "\<TAB>"
-"             endif
-"         endif
-"     endif
-"     return ""
-" endfunction
-" let g:UltiSnipesEditSplit="vertical"
-
-" au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
-" let g:UltiSnipsJumpForwardTrigger="<tab>"
-" let g:UltiSnipsListSnippets="<c-e>"
-" this mapping Enter key to <C-y> to chose the current highlight item
-" and close the selection list, same as other IDEs.
-" CONFLICT with some plugins like tpope/Endwise
-" inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " Nerd tree setting
 let NERDTreeHighlightCursorline = 1
+let NERDTreeCascadeOpenSingleChildDir = 0
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 let NERDChristmasTree = 1
 let NERDTreeChDirMode = 2
+let NERDTreeQuitOnOpen=1
+
 map <D-d> :NERDTreeToggle<CR>
 nnoremap <leader>l :NERDTreeFind<CR>
-nnoremap <leader>P :NERDTree<Space>
+nnoremap <leader>P :NERDTreeFromBookmark<Space>
+"close vim if the only window left open is a NERDTree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+"
 " autocmd VimEnter * NERDTree Bobcat
 " Ctrlp setting
-" let g:ctrlp_clear_cache_on_exit = 0
-nmap <leader>p :CtrlPBuffer<cr>
+let g:ctrlp_clear_cache_on_exit = 0
+" nmap <leader>p :CtrlPBuffer<cr>
 set grepprg=ag\ --nogroup\
 let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
       \ --ignore .git
@@ -313,6 +324,11 @@ let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
       \ --ignore "**/*.(png|jpeg|jpg|gif|bmp)"
       \ -g ""'
 let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+let g:ctrlp_prompt_mappings = {
+  \ 'ToggleRegex()':        ['<F5>'],
+  \ 'PrtClearCache()':      ['<c-r>'],
+  \ }
+
 " Tmuxline setting
 let g:tmuxline_preset = 'powerline'
 let g:tmuxline_separators = {
@@ -335,7 +351,7 @@ let Tlist_Close_On_Select = 1 "close taglist window once we selected something
 let Tlist_Show_Menu = 1 "show Tags menu in gvim
 let Tlist_Show_One_File = 1 "show tags of only one file
 let Tlist_GainFocus_On_ToggleOpen = 1 "automatically switch to taglist window
-let Tlist_Highlight_Tag_On_BufEnter = 1 "highlight current tag in taglist window
+let Tlist_Highlight_Tag_On_BufEnter = 0 "highlight current tag in taglist window
 let Tlist_Process_File_Always = 1 "even without taglist window, create tags file, required for displaying tag in statusline
 let Tlist_Use_Right_Window = 1 "display taglist window on the right
 let Tlist_Display_Prototype = 1 "display full prototype instead of just function name
@@ -346,21 +362,46 @@ nnoremap <c-e> :TlistToggle<cr>
 let g:syntastic_mode_map = {
     \ "mode": "active",
     \ "passive_filetypes": ["haml", "less", "hrt", "erb", "eruby"] }
+" let g:syntastic_ruby_checkers = ['rubocop']
+
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
+
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
 
 
-" rubocop
-" for ruby complete
-" let g:rubycomplete_buffer_loading = 1
-" let g:rubycomplete_rails = 1
+" ALE settings
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_text_changed = 0
+
+" Dash
+nmap <silent> <leader>d <Plug>DashSearch
+let g:dash_map = {
+        \ 'ruby' : ['rails', 'ruby']
+        \ }
+
 " Basic Mapping
 nnoremap 0 ^
 nnoremap ^ 0
 nnoremap <leader>n :setlocal number!<cr>
 nnoremap K :q<cr>
-nnoremap <c-s> :w<cr>
-inoremap <c-s> <esc>:w<cr>
+" If the current buffer has never been saved, it will have no name,
+" call the file browser to save it, otherwise just save it.
+command -nargs=0 -bar Update if &modified
+                           \|    if empty(bufname('%'))
+                           \|        browse confirm write
+                           \|    else
+                           \|        confirm write
+                           \|    endif
+                           \|endif
+nnoremap <silent> <c-s> :<c-u>Update<cr>
+inoremap <c-s> <esc>:Update<cr>
+
 nnoremap <c-f> :Ag<space>
-nnoremap VV :so %<cr>
 nnoremap M K
 nnoremap <leader>= gg=G
 " nnoremap <leader>rr :Rrunner<cr>
@@ -386,7 +427,7 @@ nnoremap / /\v
 vnoremap / /\v
 
 " Quick editting
-nnoremap <cr> :noh<cr>
+" nnoremap <cr> :noh<cr>
 " Keep search matches in the middle of the window
 nnoremap n nzzzv
 nnoremap N Nzzzv
@@ -410,8 +451,6 @@ omap / <Plug>(easymotion-tn)
 nnoremap <leader>gd :Gdiff<cr>
 nnoremap <leader>gs :Gstatus<cr>
 
-nnoremap <leader>s :!rspec --drb %
-let g:rspec_runner = "Dispatch rspec {spec}"
 
 " Rails vim
 nnoremap <leader>a :AS<cr>
@@ -430,9 +469,7 @@ vmap <Enter> <Plug>(EasyAlign)
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
-
-nnoremap <c-]> :CtrlPtjump<cr>
-vnoremap <c-]> :CtrlPtjumpVisual<cr>
+nnoremap <c-space> :CtrlPBuffer<cr>
 
 let g:tlist_coffee_settings = 'coffee;f:function;v:variable'
 
@@ -442,3 +479,24 @@ au BufRead,BufNewFile *.es6  set filetype=javascript
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
 
+nnoremap <bs> <c-w>W
+
+" https://superuser.com/questions/755122/vim-move-to-first-non-blank-in-same-column
+nnoremap <leader>j m':exec '/\%' . col(".") . 'c\S'<CR>``n
+nnoremap <leader>k m':exec '?\%' . col(".") . 'c\S'<CR>``n
+
+" https://coderwall.com/p/faceag/format-json-in-vim
+nmap =j :%!python -m json.tool<CR>
+
+"copies just the filename.
+nmap <leader>cs :let @*=expand("%")<CR>
+"copies the filename including its full path.
+nmap <leader>cl :let @*=expand("%:p")<CR>
+
+let g:incsearch#auto_nohlsearch = 1
+map n  <Plug>(incsearch-nohl-n)
+map N  <Plug>(incsearch-nohl-N)
+map *  <Plug>(incsearch-nohl-*)
+map #  <Plug>(incsearch-nohl-#)
+map g* <Plug>(incsearch-nohl-g*)
+map g# <Plug>(incsearch-nohl-g#)

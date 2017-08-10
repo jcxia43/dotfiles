@@ -27,17 +27,17 @@ Plugin 'JazzCore/ctrlp-cmatcher'
 Plugin 'Lokaltog/vim-easymotion'
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'edkolev/tmuxline.vim'
+" Plugin 'edkolev/tmuxline.vim'
 Plugin 'groenewege/vim-less'
 Plugin 'ivalkeen/vim-ctrlp-tjump'
 Plugin 'junegunn/vim-easy-align'
-Plugin 'kchmck/vim-coffee-script'
 Plugin 'kien/ctrlp.vim'
 Plugin 'ngmy/vim-rubocop'
 Plugin 'Raimondi/delimitMate'
 Plugin 'scrooloose/nerdtree'
 " Plugin 'scrooloose/syntastic'
-Plugin 'taglist.vim'
+" Plugin 'taglist.vim'
+Plugin 'majutsushi/tagbar'
 " Plugin 'terryma/vim-multiple-cursors'
 Plugin 'thoughtbot/vim-rspec'
 Plugin 'tpope/vim-bundler'
@@ -45,7 +45,6 @@ Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-dispatch'
 " Plugin 'p0deje/vim-dispatch-vimshell'
 Plugin 'tpope/vim-endwise'
-Plugin 'tpope/vim-haml'
 Plugin 'tpope/vim-rails'
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-jdaddy'
@@ -54,8 +53,6 @@ Plugin 'terryma/vim-expand-region'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'ana/vim-textobj-user'
 Plugin 'nelstrom/vim-textobj-rubyblock'
-Plugin 'mtscout6/vim-cjsx'
-Plugin 'mxw/vim-jsx'
 Plugin 'othree/yajs.vim'
 Plugin 'romainl/flattened'
 Plugin 'morhetz/gruvbox'
@@ -67,9 +64,9 @@ Plugin 'jremmen/vim-ripgrep'
 Plugin 'rizzatti/dash.vim'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'haya14busa/incsearch.vim'
-
-" Plugin 'rust-lang/rust.vim'
-" Plugin 'vim-ctrlspace/vim-ctrlspace'
+Plugin 'joshdick/onedark.vim'
+Plugin 'sheerun/vim-polyglot'
+Plugin 'jreybert/vimagit'
 
 
 
@@ -149,7 +146,7 @@ set sidescroll=1
 set sidescrolloff=10
 set t_Co=256
 
-set guifont=InputMonoCondensed:h18
+set guifont=Iosevka:h20
 set guioptions-=L
 set guioptions-=r
 
@@ -277,12 +274,15 @@ set directory=~/.vim/tmp/swap//
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 " Color scheme
 
+let g:onedark_terminal_italics = 1
 set background=light
-colorscheme flattened_light
+colorscheme onedark
+" colorscheme flattened_light
 " colorscheme gruvbox
 
 " Airline setting
-let g:airline_theme = 'solarized'
+let g:airline_theme = 'onedark'
+let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#whitespace#enabled = 0
 " Just show the filename (no path) in the tab
 let g:airline#extensions#tabline#fnamemod = ':t'
@@ -329,15 +329,41 @@ let g:ctrlp_prompt_mappings = {
   \ 'PrtClearCache()':      ['<c-r>'],
   \ }
 
+let g:ctrlp_abbrev = {
+  \ 'gmode': 't',
+  \ 'abbrevs': [
+    \ {
+      \ 'pattern': ' c',
+      \ 'expanded': 'controllers',
+      \ 'mode': '',
+    \ },
+    \ {
+      \ 'pattern': ' v',
+      \ 'expanded': 'views',
+      \ 'mode': '',
+    \ },
+    \ {
+      \ 'pattern': ' m',
+      \ 'expanded': 'models',
+      \ 'mode': '',
+    \ },
+    \ ]
+  \ }
+
+
+" Ctrp tjump
+nnoremap <c-]> :CtrlPtjump<cr>
+vnoremap <c-]> :CtrlPtjumpVisual<cr>
+
 " Tmuxline setting
-let g:tmuxline_preset = 'powerline'
-let g:tmuxline_separators = {
-      \ 'left' : '▶',
-      \ 'left_alt': '',
-      \ 'right' : '◀',
-      \ 'right_alt' : '',
-      \ 'space' : ' '}
-let g:tmuxline_powerline_separators = 0
+" let g:tmuxline_preset = 'powerline'
+" let g:tmuxline_separators = {
+"       \ 'left' : '▶',
+"       \ 'left_alt': '',
+"       \ 'right' : '◀',
+"       \ 'right_alt' : '',
+"       \ 'space' : ' '}
+" let g:tmuxline_powerline_separators = 0
 " unicode symbols
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#bufferline#enabled = 0
@@ -346,17 +372,21 @@ let g:airline#extensions#tabline#show_buffers = 0
 " ag.vim
 let g:ag_prg="ag --column --smart-case"
 let g:ag_highlight=1
+" tagbar
+let g:tagbar_autoclose=1
+
 " taglist.vim
-let Tlist_Close_On_Select = 1 "close taglist window once we selected something
-let Tlist_Show_Menu = 1 "show Tags menu in gvim
-let Tlist_Show_One_File = 1 "show tags of only one file
-let Tlist_GainFocus_On_ToggleOpen = 1 "automatically switch to taglist window
-let Tlist_Highlight_Tag_On_BufEnter = 0 "highlight current tag in taglist window
-let Tlist_Process_File_Always = 1 "even without taglist window, create tags file, required for displaying tag in statusline
-let Tlist_Use_Right_Window = 1 "display taglist window on the right
-let Tlist_Display_Prototype = 1 "display full prototype instead of just function name
-let Tlist_WinWidth = 50
-nnoremap <c-e> :TlistToggle<cr>
+" let Tlist_Close_On_Select = 1 "close taglist window once we selected something
+" let Tlist_Show_Menu = 1 "show Tags menu in gvim
+" let Tlist_Show_One_File = 1 "show tags of only one file
+" let Tlist_GainFocus_On_ToggleOpen = 1 "automatically switch to taglist window
+" let Tlist_Highlight_Tag_On_BufEnter = 0 "highlight current tag in taglist window
+" let Tlist_Process_File_Always = 1 "even without taglist window, create tags file, required for displaying tag in statusline
+" let Tlist_Use_Right_Window = 1 "display taglist window on the right
+" let Tlist_Display_Prototype = 1 "display full prototype instead of just function name
+" let Tlist_WinWidth = 50
+" nnoremap <c-e> :TlistToggle<cr>
+nnoremap <c-e> :TagbarToggle<CR>
 
 " syntastic
 let g:syntastic_mode_map = {
@@ -482,16 +512,16 @@ vmap <C-v> <Plug>(expand_region_shrink)
 nnoremap <bs> <c-w>W
 
 " https://superuser.com/questions/755122/vim-move-to-first-non-blank-in-same-column
-nnoremap <leader>j m':exec '/\%' . col(".") . 'c\S'<CR>``n
-nnoremap <leader>k m':exec '?\%' . col(".") . 'c\S'<CR>``n
+" nnoremap <leader>j m':exec '/\%' . col(".") . 'c\S'<CR>``n
+" nnoremap <leader>k m':exec '?\%' . col(".") . 'c\S'<CR>``n
 
 " https://coderwall.com/p/faceag/format-json-in-vim
-nmap =j :%!python -m json.tool<CR>
+autocmd FileType json nmap =j :%!python -m json.tool<CR>
 
 "copies just the filename.
-nmap <leader>cs :let @*=expand("%")<CR>
+nmap <leader>cl :let @*=expand("%")<CR>
 "copies the filename including its full path.
-nmap <leader>cl :let @*=expand("%:p")<CR>
+" nmap <leader>cl :let @*=expand("%:p")<CR>
 
 let g:incsearch#auto_nohlsearch = 1
 map n  <Plug>(incsearch-nohl-n)
@@ -500,3 +530,14 @@ map *  <Plug>(incsearch-nohl-*)
 map #  <Plug>(incsearch-nohl-#)
 map g* <Plug>(incsearch-nohl-g*)
 map g# <Plug>(incsearch-nohl-g#)
+
+" set foldlevelstart=0
+" set foldmethod=syntax
+
+" " Space to toggle folds.
+" nnoremap <CR> za
+"
+
+
+" magit
+nnoremap <leader>gg :Magit<CR>
